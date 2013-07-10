@@ -10,9 +10,8 @@ using namespace cv;
 
 
 /** Global variables */
-String face_cascade_name = "haarcascade_frontalface_alt.xml";
+String face_cascade_name = "data/haarcascade_frontalface_alt.xml";
 CascadeClassifier face_cascade;
-string window_name = "Capture - Face detection";
 RNG rng(12345);
 
 
