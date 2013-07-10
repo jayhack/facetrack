@@ -46,6 +46,7 @@ void Face::print_info () {
 	cout << "### Face: print info" << endl;
 	cout << "### 	- center_coordinates: (" << current_location.x << ", " << current_location.y << ")" << endl;
 	cout << "### 	- boundary width, height: " << boundary.width << ", " << boundary.height << endl;
+	cout << "###	- velocity (x, y): (" << velocity[0] << ", " << velocity[1] << ")" << endl;
 	cout << endl;
 }
 
@@ -70,6 +71,8 @@ Face::Face () {}
 Face::Face (Rect face_rect) {
 	boundary = face_rect;
 	current_location = get_center_of_rectangle (boundary);
+	velocity[0] = 0;
+	velocity[1] = 0;
 	print_info ();
 }
 
@@ -134,13 +137,24 @@ int Face::get_best_face_index (vector<Rect> face_rects) {
 /* Function: update
  * -------------------------
  * given the vector of all faces just detected, this function will determine which face is the best match for it,
- * then will update its location/velocity accordingly
+ * then will update its location/velocity accordingly. it removes the matching face from the face_rects vector.
  */
-void Face::update (vector<Rect> face_rects) {
-	int match_index = get_best_face_index (face_rects);
-	Rect best_face_boundary = face_rects[match_index];
+void Face::update (vector<Rect> *face_rects) {
+	
+	int match_index = get_best_face_index (*face_rects);
+	Rect best_face_boundary = (*face_rects)[match_index];
+	face_rects->erase (face_rects->begin() + match_index);
+	
+	/*### boundary ###*/
 	boundary = best_face_boundary;
+
+	/*### location ###*/
+	previous_location = current_location;
 	current_location = get_center_of_rectangle (boundary);
+
+	/*### velocity ###*/
+	velocity[0] = current_location.x - previous_location.x;
+	velocity[1] = current_location.y - previous_location.y;
 }
 
 
@@ -158,4 +172,4 @@ void Face::update (vector<Rect> face_rects) {
  * you know the drill.
  */
 Rect Face::get_boundary () { return boundary;}
-Vec2b Face::get_velocity () { return velocity;}
+Vec2i Face::get_velocity () { return velocity;}

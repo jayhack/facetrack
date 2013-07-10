@@ -34,7 +34,7 @@ class Face {
 
 	/*--- Global Variables ---*/
 	Rect boundary;					//boundary of the face
-	Vec2b velocity;
+	Vec2i velocity;
 	Point current_location;
 	Point previous_location;
 
@@ -85,7 +85,7 @@ public:
 	 * given the vector of all faces just detected, this function will determine which face is the best match for it,
 	 * then will update its location/velocity accordingly
 	 */
-	void update (vector<Rect> face_rects);
+	void update (vector<Rect> *face_rects);
 
 
 
@@ -99,7 +99,7 @@ public:
 	 * you know the drill.
 	 */
 	Rect get_boundary ();
-	Vec2b get_velocity ();
+	Vec2i get_velocity ();
 
 
 };
