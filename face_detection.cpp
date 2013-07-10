@@ -26,8 +26,8 @@ Size max_face_size = Size (400, 400);
  * ----------------------
  * given b/w frame, histogram-normalized, this function will return a vector of 'face' rectangles
  */
-std::vector<Rect> detect_faces( Mat frame_bw ){
-  std::vector<Rect> faces;
+vector<Rect> detect_faces(Mat frame_bw){
+  vector<Rect> faces;
   Size min_size = Size(280, 280);
   Size max_size = Size(400, 400);
   face_cascade.detectMultiScale(frame_bw, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, min_face_size, max_face_size);
@@ -67,7 +67,7 @@ int main( int argc, const char** argv )
 		equalizeHist(frame_bw, frame_bw);
 
 		/*### get all of the faces ###*/
-		std::vector<Rect> faces = detect_faces (frame_bw);
+		vector<Rect> faces = detect_faces (frame_bw);
 
 
 		/*### draw them on the display frame ###*/

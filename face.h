@@ -8,35 +8,82 @@
 using namespace std;
 using namespace cv;
 
-/* TO DO:
-	- compute statistics on the expected discrepancy, etc, factor that in
-	- 
+/*########################################################################################################################*/
+/*############################[--- UTILITIES ---] ########################################################################*/
+/*########################################################################################################################*/
+/* Function: get_center_of_rectangle
+ * ---------------------------------
+ * given a rectangle, this function will return the coordinates of its center
+ */
+Point get_center_of_rectangle (Rect rect) {
+	Point center;
+	center.x = rect.x + rect.width*0.5;
+	center.y = rect.y + rect.height*0.5;
+	return center
+}
 
 
+
+
+
+
+
+
+
+
+/*########################################################################################################################*/
+/*############################[--- FACE CLASS ---] #######################################################################*/
+/*########################################################################################################################*/
 class Face {
 
 	/*--- Global Variables ---*/
-	Rect boundaries;					//boundaries of the face
-	std::vector <float> velocity;		//current velocity 
+	Rect boundary;					//boundary of the face
+	Vec2b velocity;
 	Point current_location;
 	Point previous_location;
 
 public:
 
 
-	/* Function: get_center_of_rectangle
-	 * ---------------------------------
-	 * given a rectangle, this function will return the coordinates of its center
+	/* Function: print_info
+	 * --------------------
+	 * this function will print all relevant info on this face to standard out
 	 */
-	Point get_center_of_rectangle (Rect rect) {
-		Point center;
-		center.x = rect.x + rect.width*0.5;
-		center.y = rect.y + rect.height*0.5;
-		return center
+	void print_info () {
+		cout << "### Face: print info" << endl;
+		cout << "### 	- center_coordinates: (" << current_location.x << ", " << current_location.y << ")" << endl;
+		cout << "### 	- boundary width, height: " << boundary.width << ", " << boundary.height << endl;
+		cout << endl;
 	}
 
 
+	/*########################################################################################################################*/
+	/*############################[--- CONSTRUCTOR/DESTRUCTOR ---] ###########################################################*/
+	/*########################################################################################################################*/
 
+	/* Function: constructor
+	 * ---------------------
+	 * will set the location of the face.
+	 */
+	Face (Rect face_rect) {
+		boundary = face_rect;
+		current_location = get_center_of_rectangle (boundary);
+		print_info ();
+	}
+
+	/* Function: constructor
+	 * ---------------------
+	 * will set the location of the face.
+	 */
+	 ~Face () {
+	 	cout << "--- DESTROYING FACE: (info printed below) ---"
+	 	print_info ();
+	 }
+
+
+	/*########################################################################################################################*/
+	/*############################[--- UPDATING ---] #########################################################################*/
+	/*########################################################################################################################*/
 	/* Function: get_best_face_index
 	 * -----------------------------
 	 * given a vector of face_rects, this function returns the index of the one that best matches this face object.
@@ -44,7 +91,7 @@ public:
 	 * TODO: modify this so that it takes velocity into account as well!
 	 * TODO: modify this to return an error value if the discrepancy is too large!
 	 */
-	int get_best_face_index (std::vector<Rect> face_rects) {
+	int get_best_face_index (vector<Rect> face_rects) {
 		int min_discrepancy = 100000;
 		int best_index = -1;
 
@@ -58,7 +105,7 @@ public:
 			int location_discrepancy = pow(current_location.x - current_face_center.x, 2) + pow(current_location.y - current_face_center.y, 2);
 
 			/*### get size discrepancy ###*/
-			int size_discrepancy = abs(boundaries.width - current_face_rect.width) * abs(boundaries.height - current_face_rect.height);
+			int size_discrepancy = abs(boundary.width - current_face_rect.width) * abs(boundary.height - current_face_rect.height);
 
 			/*### total discrepancy ###*/
 			int current_discrepancy = location_discrepancy * size_discrepancy;
@@ -74,24 +121,24 @@ public:
 		return best_index;
 	}
 
-
-	/* Function: update_location
+	/* Function: update
 	 * -------------------------
 	 * given the vector of all faces just detected, this function will determine which face is the best match for it,
 	 * then will update its location/velocity accordingly
 	 */
-	void update (std::vector<Rect> face_rects) {
-
+	void update (vector<Rect> face_rects) {
 		int match_index = get_best_face_index (face_rects);
-		Rect best_face_boundaries = face_rects[match_index];
-
-		boundaries = best_face_boundaries;
-
-
-
+		Rect best_face_boundary = face_rects[match_index];
+		boundary = best_face_boundary;
+		current_location = get_center_of_rectangle (boundary);
 	}
 
-	Rect get_boundaries () { return boundaries;}
+
+	/* Function: getters
+	 * -----------------
+	 * you know the drill.
+	 */
+	Rect get_boundary () { return boundary;}
 	Rect get_velocity () { return velocity; }
 
 
