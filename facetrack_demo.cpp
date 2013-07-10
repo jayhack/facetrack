@@ -36,29 +36,6 @@ vector<Rect> detect_face_rects(Mat frame_bw){
 }
 
 
-/* Function: update_faces
- * ----------------------
- * given pointers to vectors of faces and face rects, it will update the face_rects vector.
- */
-void update_faces (vector<Face*> *faces, vector<Rect> *face_rects) {
-
-	cout << "----- update faces -----" << endl;
-	cout << "	current # of faces: " << faces->size () << endl;
-	cout << "	current # of face_rects: " << face_rects->size() << endl;
-
-	/*### for each current face, find the best matching face_rect ###*/
-	for (int i=0;i<faces->size ();i++) {
-		(*faces)[i]->update (face_rects);
-		(*faces)[i]->print_info ();
-	}
-
-	/*### for all remaining face_rects, create a new face ###*/
-	for (int i=0;i<face_rects->size();i++) {
-		Face * new_face = new Face ((*face_rects)[i]);
-		faces->push_back(new_face);
-	}
-}
-
 
 
 /* Function: main_function
@@ -79,7 +56,9 @@ int main( int argc, const char** argv )
 	if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face cascade\n"); return -1; };
 
 
-	std::vector<Face*> faces;
+	/*### Step 3: set up the user's face ###*/
+	Face *face = new Face ();
+
 
 	/*### Step 3: read the video stream ###*/
 	Mat frame_bw;
@@ -95,16 +74,20 @@ int main( int argc, const char** argv )
 		/*### get all of the faces ###*/
 		vector<Rect> face_rects = detect_face_rects (frame_bw);
 
+    	/*### update faces ###*/
+    	face->update (face_rects);
+
+
+    	/*### draw the face on the display frame ###*/
+    	if (face->exists ()) {		
+	    	ellipse( frame, face->get_center(), Size(face->get_boundary().width, face->get_boundary().height), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0);
+	    }
 
 		/*### draw them on the display frame ###*/
   		for( int i = 0; i < face_rects.size(); i++ ) {
-
   			/*### print some info on all of the detected face rects ###*/
     		Point center( face_rects[i].x + face_rects[i].width*0.5, face_rects[i].y + face_rects[i].height*0.5 );
-    		ellipse( frame, center, Size( face_rects[i].width*0.5, face_rects[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
-
-    		/*### update faces ###*/
-    		update_faces (&faces, &face_rects);
+    		ellipse( frame, center, Size( face_rects[i].width*0.5, face_rects[i].height*0.5), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0 );
     	}
 
 

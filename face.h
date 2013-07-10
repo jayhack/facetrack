@@ -32,11 +32,13 @@ Point get_center_of_rectangle (Rect rect);
 /*########################################################################################################################*/
 class Face {
 
-	/*--- Global Variables ---*/
+	/*--- Location ---*/
 	Rect boundary;					//boundary of the face
 	Vec2i velocity;
 	Point current_location;
 	Point previous_location;
+	bool is_on_screen;
+
 
 public:
 
@@ -85,7 +87,7 @@ public:
 	 * given the vector of all faces just detected, this function will determine which face is the best match for it,
 	 * then will update its location/velocity accordingly
 	 */
-	void update (vector<Rect> *face_rects);
+	void update (vector<Rect> face_rects);
 
 
 
@@ -99,7 +101,9 @@ public:
 	 * you know the drill.
 	 */
 	Rect get_boundary ();
+	Point get_center ();
 	Vec2i get_velocity ();
+	bool exists ();
 
 
 };

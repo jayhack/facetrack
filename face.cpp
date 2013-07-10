@@ -67,8 +67,11 @@ void Face::print_info () {
  * ---------------------
  * will set the location of the face.
  */
-Face::Face () {}
+Face::Face () {
+	is_on_screen = false;
+}
 Face::Face (Rect face_rect) {
+	is_on_screen = true;
 	boundary = face_rect;
 	current_location = get_center_of_rectangle (boundary);
 	velocity[0] = 0;
@@ -139,11 +142,18 @@ int Face::get_best_face_index (vector<Rect> face_rects) {
  * given the vector of all faces just detected, this function will determine which face is the best match for it,
  * then will update its location/velocity accordingly. it removes the matching face from the face_rects vector.
  */
-void Face::update (vector<Rect> *face_rects) {
+void Face::update (vector<Rect> face_rects) {
 	
-	int match_index = get_best_face_index (*face_rects);
-	Rect best_face_boundary = (*face_rects)[match_index];
-	face_rects->erase (face_rects->begin() + match_index);
+
+	/*### if there are no face_rects, then update our status to not on screen ###*/
+	if (face_rects.size() == 0) {
+		/*need to re-initialize here? some sort of a count of frames we are sitting out, perhaps?*/
+		is_on_screen = false;
+		return;
+	}
+
+	int match_index = get_best_face_index (face_rects);
+	Rect best_face_boundary = face_rects[match_index];
 	
 	/*### boundary ###*/
 	boundary = best_face_boundary;
@@ -172,4 +182,6 @@ void Face::update (vector<Rect> *face_rects) {
  * you know the drill.
  */
 Rect Face::get_boundary () { return boundary;}
+Point Face::get_center () { return current_location;}
 Vec2i Face::get_velocity () { return velocity;}
+bool Face::exists () {return is_on_screen;}
