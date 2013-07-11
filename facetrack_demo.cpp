@@ -11,31 +11,6 @@ using namespace std;
 using namespace cv;
 
 
-/** Global variables */
-String face_cascade_name = "data/haarcascade_frontalface_alt.xml";
-CascadeClassifier face_cascade;
-RNG rng(12345);
-
-
-/*### the range of sizes that work for detecting a face when I am sitting at the laptop. ###*
- *### Note: it's pretty liberal, with about ~75px padding on either side				 ###*/
-Size min_face_size = Size (250, 250);
-Size max_face_size = Size (400, 400);
-
-
-/* Function: detect_faces
- * ----------------------
- * given b/w frame, histogram-normalized, this function will return a vector of 'face' rectangles
- */
-vector<Rect> detect_face_rects(Mat frame_bw){
-  vector<Rect> face_rects;
-  Size min_size = Size(280, 280);
-  Size max_size = Size(400, 400);
-  face_cascade.detectMultiScale(frame_bw, face_rects, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, min_face_size, max_face_size);
-  return face_rects;
-}
-
-
 
 
 /* Function: main_function
@@ -52,61 +27,31 @@ int main( int argc, const char** argv )
 	/*### Step 2: set up the display ###*/
 	namedWindow ("DISPLAY", CV_WINDOW_AUTOSIZE);
 
-	/*### Step 2: load the face cascade ###*/
-	if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading face cascade\n"); return -1; };
-
-
 	/*### Step 3: set up the user's face ###*/
-	Face *face = new Face ();
+	Face *face = NULL;
 
-
-	/*### Step 3: read the video stream ###*/
-	Mat frame_bw;
+	/*### Step 4: read the video stream ###*/
 	while (true) {
 
 		Mat frame;
 		webcam >> frame;
 
-		/*### get the frame in grayscale, high contrast ###*/
-		cvtColor (frame, frame_bw, CV_BGR2GRAY);
-		equalizeHist(frame_bw, frame_bw);
+		if (face == NULL) 
+			face = new Face (frame);
 
-		/*### get all of the faces ###*/
-
-		Rect search_area;
-		vector<Rect> face_rects;
-		if (face->exists()) {
-			search_area = face->get_search_area ();
-			Mat ROI = frame_bw(search_area).clone ();
-			vector<Rect> face_rects = detect_face_rects (frame_bw);
-		}
-		else {
-			vector<Rect> face_rects = detect_face_rects (frame_bw);
-		}
-
-    	/*### update faces ###*/
-    	face->update (face_rects);
+		face->detect (frame);
 
 
     	/*### draw the face on the display frame ###*/
-    	if (face->exists ()) {		
-	    	ellipse( frame, face->get_center(), Size(face->get_boundary().width, face->get_boundary().height), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0);
+    	if (face->exists ()) {	
+    		cout << "---------- DRAWING EXISTING FACE ------------" << endl;	
+    		face->print_info ();
+	    	circle( frame, face->get_center(), face->get_boundary().width/2, Scalar( 0, 0, 255 ), 4, 8, 0);
 	    }
 
 
 
-		/*### draw them on the display frame ###*/
-  		for( int i = 0; i < face_rects.size(); i++ ) {
-  			/*### print some info on all of the detected face rects ###*/
-    		Point center( face_rects[i].x + face_rects[i].width*0.5, face_rects[i].y + face_rects[i].height*0.5 );
-    		ellipse( frame, center, Size( face_rects[i].width*0.5, face_rects[i].height*0.5), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0 );
-    	}
-
-
-		imshow ("DISPLAY", frame);
-
-
-
+	    imshow ("DISPLAY", frame);
 		int key = waitKey (30);
 		if (key == 'q') break;
 	}

@@ -1,3 +1,6 @@
+#ifndef _FACE_H
+#define _FACE_H
+
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -8,6 +11,9 @@
 
 using namespace std;
 using namespace cv;
+
+#define FACE_CASCADE_NAME "data/haarcascade_frontalface_alt.xml"
+
 
 /*########################################################################################################################*/
 /*############################[--- UTILITIES ---] ########################################################################*/
@@ -20,7 +26,12 @@ Point get_center_of_rectangle (Rect rect);
 
 
 
-
+/* Function: crop_roi
+ * ------------------
+ * given a mat and a proposed roi rect, this function will crop the roi so that 
+ * it fits correctly on top of the mat
+ */
+Rect crop_roi (Rect proposed_roi, Mat frame);
 
 
 
@@ -32,6 +43,9 @@ Point get_center_of_rectangle (Rect rect);
 /*########################################################################################################################*/
 class Face {
 
+	/*--- cascade ---*/
+	CascadeClassifier face_cascade;
+
 	/*--- Location ---*/
 	Rect boundary;					//boundary of the face
 	Vec2i velocity;
@@ -42,6 +56,8 @@ class Face {
 	/*--- other ---*/
 	int frame_width;
 	int frame_height;
+
+
 
 
 public:
@@ -62,9 +78,10 @@ public:
 	 * ---------------------
 	 * will set the location of the face.
 	 */
+	void init_stats ();
 	Face ();
-	Face (int frame_width, int frame_height);
-	Face (Rect face_rect, int frame_width, int frame_height);
+	Face (Mat frame);
+	Face (Mat frame, Rect face_rect);
 
 	/* Function: constructor
 	 * ---------------------
@@ -99,7 +116,8 @@ public:
 	/*########################################################################################################################*/
 	/*############################[--- GETTING SEARCH AREA ---] ##############################################################*/
 	/*########################################################################################################################*/
-	Rect get_search_area ();
+	Rect get_search_area (Mat frame);
+	void detect (Mat frame);
 
 
 
@@ -118,3 +136,5 @@ public:
 
 
 };
+
+#endif
