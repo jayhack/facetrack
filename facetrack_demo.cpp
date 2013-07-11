@@ -44,7 +44,7 @@ int main( int argc, const char** argv )
 
     	/*### draw the face on the display frame ###*/
     	if (face->exists ()) {	
-    		cout << "---------- DRAWING EXISTING FACE ------------" << endl;	
+    		cout << "---------- DRAWING FACE ------------" << endl;	
     		face->print_info ();
 	    	circle( frame, face->get_center(), face->get_boundary().width/2, Scalar( 0, 0, 255 ), 4, 8, 0);
 	    }

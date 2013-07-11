@@ -274,12 +274,8 @@ Rect Face::get_search_area (Mat frame) {
 	search_area.x = center_x - search_area.width*0.5;
 	search_area.y = center_y - search_area.height*0.5;
 
-	cout << "before... " << endl;
-	cout << "search_area.width, height, x, y = " <<  search_area.width << ", " << search_area.height << ", " << search_area.x << ", " << search_area.y << endl;
 	/*### crop it so that its fits on the original image ###*/
 	search_area = crop_roi (search_area, frame);
-	cout << "after... " << endl;
-	cout << "search_area.width, height, x, y = " <<  search_area.width << ", " << search_area.height << ", " << search_area.x << ", " << search_area.y << endl;
 
 	return search_area;
 }
@@ -309,15 +305,6 @@ void Face::detect (Mat frame) {
 
 	int key;
 
-	// cout << ">>>>>>>>>>>>>>>>>>> DETECT STEP: BEGIN <<<<<<<<<<<<<<<<<<<<" << endl;
-	// cout << "(displaying frame passed in...)" << endl;
-	// cout << "press q to continue" << endl;
-	// imshow ("DISPLAY", frame);
-	// key = 0;
-	// while (key != 'q') {
-	// 	key = waitKey (30);
-	// }
-
 	/*### Step 1: figure out the search area ###*/
 	Mat ROI, ROI_bw;
 	Rect search_area;
@@ -334,31 +321,9 @@ void Face::detect (Mat frame) {
 	ROI = frame (search_area).clone ();
 
 
-	// cout << ">>>>>>>>>>>>>>>>>>> DETECT STEP: GET ROI <<<<<<<<<<<<<<<<<<<<" << endl;
-	// cout << "(displaying ROI...)" << endl;
-	// cout << "press q to continue" << endl;
-	// cout << "ROI.rows, cols" << ROI.rows << ", " << ROI.cols << endl;
-	// // cout << "search_area.width, height, x, y = " <<  search_area.width << ", " << search_area.height << ", " << search_area.x << ", " << search_area.y << endl;
-	// imshow ("DISPLAY", ROI);
-	// key = 0;
-	// while (key != 'q') {
-	// 	key = waitKey (30);
-	// }
-
-
 	/*### Step 2: preprocessing (get it into b/w, equalize histogram to improve contrast) ###*/
 	cvtColor (ROI, ROI_bw, CV_BGR2GRAY);
 	equalizeHist(ROI_bw, ROI_bw);
-
-	// cout << ">>>>>>>>>>>>>>>>>>> DETECT STEP: PREPROCESS ROI <<<<<<<<<<<<<<<<<<<<" << endl;
-	// cout << "(displaying ROI_bw...)" << endl;
-	// cout << "press q to continue" << endl;
-	// imshow ("DISPLAY", ROI_bw);
-	// key = 0;
-	// while (key != 'q') {
-		// key = waitKey (30);
-	// }
-
 
 
 	/*### Step 3: detect all face-like patterns in the image ###*/
@@ -368,16 +333,6 @@ void Face::detect (Mat frame) {
 	face_cascade.detectMultiScale(ROI_bw, face_rects, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, min_face_size, max_face_size);
 
 	convert_face_rects_to_absolute (&face_rects, search_area);
-
-	// cout << ">>>>>>>>>>>>>>>>>>> DETECT STEP: FOUND FACES <<<<<<<<<<<<<<<<<<<<" << endl;
-	// cout << "(displaying ROI_bw...)" << endl;
-	// cout << "press q to continue" << endl;
-	// imshow ("DISPLAY", frame);
-	// key = 0;
-	// while (key != 'q') {
-	// 	key = waitKey (30);
-	// }
-
 
 
 	/*### Step 4: update this face's position and velocity ###*/
