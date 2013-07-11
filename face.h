@@ -39,6 +39,10 @@ class Face {
 	Point previous_location;
 	bool is_on_screen;
 
+	/*--- other ---*/
+	int frame_width;
+	int frame_height;
+
 
 public:
 
@@ -59,7 +63,8 @@ public:
 	 * will set the location of the face.
 	 */
 	Face ();
-	Face (Rect face_rect);
+	Face (int frame_width, int frame_height);
+	Face (Rect face_rect, int frame_width, int frame_height);
 
 	/* Function: constructor
 	 * ---------------------
@@ -89,6 +94,12 @@ public:
 	 */
 	void update (vector<Rect> face_rects);
 
+
+
+	/*########################################################################################################################*/
+	/*############################[--- GETTING SEARCH AREA ---] ##############################################################*/
+	/*########################################################################################################################*/
+	Rect get_search_area ();
 
 
 

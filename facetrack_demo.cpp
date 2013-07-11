@@ -72,7 +72,17 @@ int main( int argc, const char** argv )
 		equalizeHist(frame_bw, frame_bw);
 
 		/*### get all of the faces ###*/
-		vector<Rect> face_rects = detect_face_rects (frame_bw);
+
+		Rect search_area;
+		vector<Rect> face_rects;
+		if (face->exists()) {
+			search_area = face->get_search_area ();
+			Mat ROI = frame_bw(search_area).clone ();
+			vector<Rect> face_rects = detect_face_rects (frame_bw);
+		}
+		else {
+			vector<Rect> face_rects = detect_face_rects (frame_bw);
+		}
 
     	/*### update faces ###*/
     	face->update (face_rects);
@@ -82,6 +92,8 @@ int main( int argc, const char** argv )
     	if (face->exists ()) {		
 	    	ellipse( frame, face->get_center(), Size(face->get_boundary().width, face->get_boundary().height), 0, 0, 360, Scalar( 0, 0, 255 ), 4, 8, 0);
 	    }
+
+
 
 		/*### draw them on the display frame ###*/
   		for( int i = 0; i < face_rects.size(); i++ ) {

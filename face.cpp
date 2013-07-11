@@ -58,7 +58,6 @@ void Face::print_info () {
 
 
 
-
 /*########################################################################################################################*/
 /*############################[--- CONSTRUCTOR/DESTRUCTOR ---] ###########################################################*/
 /*########################################################################################################################*/
@@ -67,11 +66,16 @@ void Face::print_info () {
  * ---------------------
  * will set the location of the face.
  */
-Face::Face () {
+Face::Face (int frame_width_temp, int frame_height_temp) {
+	frame_width = frame_width_temp;
+	frame_height = frame_height_temp;
 	is_on_screen = false;
 }
-Face::Face (Rect face_rect) {
+Face::Face (Rect face_rect, int frame_width_temp, int frame_height_temp) {
+	frame_width = frame_width_temp;
+	frame_height = frame_height_temp;
 	is_on_screen = true;
+
 	boundary = face_rect;
 	current_location = get_center_of_rectangle (boundary);
 	velocity[0] = 0;
@@ -169,6 +173,28 @@ void Face::update (vector<Rect> face_rects) {
 
 
 
+/*########################################################################################################################*/
+/*############################[--- GETTING SEARCH AREA ---] ##############################################################*/
+/*########################################################################################################################*/
+/* Function: get_search_area
+ * -------------------------
+ * this function will compute and return the area of the image that one should apply the haar cascade to in order to find face
+ * currently expands by a static 30% on all sides, then chops off for the image.
+ */
+Rect Face::get_search_area () {
+
+	Rect search_area;
+	search_area.width = boundary.width * 1.3;
+	search_area.height = boundary.height * 1.3;
+
+	int center_x = current_location.x;
+	int center_y = current_location.y;
+
+	search_area.x = center_x - search_area.width*0.5;
+	search_area.y = center_y - search_area.height*0.5;
+
+	return search_area;
+}
 
 
 
